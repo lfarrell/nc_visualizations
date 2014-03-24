@@ -235,7 +235,11 @@
                 brushmove();
             }, 1000);
 
-            // Add note
+            // Add notes
+            d3.select("#grid")
+                    .append("p")
+                    .attr("class", "notes")
+                    .text("Slider heavily based on Mike Bostock's brush handles example: http://bl.ocks.org/mbostock/4349545");
             d3.select("#grid")
                     .append("p")
                     .attr("class", "notes")
