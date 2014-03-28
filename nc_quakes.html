@@ -3,18 +3,10 @@
 <head>
     <meta charset="utf-8">
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-    <script src="d3/d3.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+ <!--   <script src="d3/d3.js"></script> -->
     <script>
         (window.onload = function() {
-            var data = [
-                { date: "06 07, 2013", magnitude: 2.3, lat: 35.28, lon: -83.319, location: "42.2 miles from Sevierville" },
-                { date: "06 24, 2013", magnitude: 2.1, lat: 35.151, lon: -77.641, location: "8.2 miles from Kinston" },
-                { date: "08 25, 2013", magnitude: 2.9, lat: 36.165, lon: -81.667, location: "3.2 miles from Boone" },
-                { date: "08 28, 2013", magnitude: 2.1, lat: 35.299, lon: -82.492, location: "2.2 miles from Hendersonville" },
-                { date: "12 10, 2013", magnitude: 1.5, lat: 35.276, lon: -83.298, location: "43.2 miles from Sevierville" },
-                { date: "02 11, 2014", magnitude: 2.9, lat: 35.296, lon: -76.628, location: "26.2 miles from New Bern" }
-            ];
-
             var data = [
                 {"date":"2014-02-11","magnitude":"2.9","lat":"35.2961","lon":"-76.6283","location":"21km NE of Bayboro"},
                 {"date":"2013-12-10","magnitude":"1.5","lat":"35.2763","lon":"-83.2983","location":"11km WSW of Cullowhee"},
@@ -88,6 +80,7 @@
                     .attr("width", map_width)
                     .attr("height", map_height)
                     .attr("transform", "translate(0,50)");
+                  //  .attr("viewBox", "0 0 50 20");
 
             var legend = map.append("g")
                 .attr("class", "legend")
@@ -357,7 +350,7 @@
 
         #grid {
             background-color: white;
-            max-width: 80%;
+
             margin: -1.5% 10%;
             padding: 10px 0;
         }
@@ -444,6 +437,12 @@
         h2 {
             text-align: center;
             padding-top: 10px;
+        }
+
+        @media all and (max-width: 1250px) {
+          body {
+            background: white;
+          }
         }
     </style>
 </head>
