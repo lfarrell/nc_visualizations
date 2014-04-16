@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+      <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <!--   <script src="d3/d3.js"></script> -->
+    <script>
+        (window.onload = function() {
+            var data = [
+               {"date": "January 2010", high: 47.4, low: 25.6, prec: 5.27},
+               {"date": "February 2010", high: 45.3, low: 26.9, prec: 4.6},
+               {"date": "March 2010", high: 62.4,low:37.9, prec:3.15 },
+               {"date": "April 2010", high: 76.9,low:48, prec:0.65},
+               {"date": "May 2010", high: 80.8,low:60.7, prec:5.16},
+               {"date": "June 2010", high: 90.3,low:70.1, prec:2.14},
+               {"date": "July 2010", high: 91.4,low:70.4, prec:3.01},
+               {"date": "August 2010", high: 89.5,low:69.9, prec:1.53},
+               {"date": "September 2010", high: 88.2,low:63.2, prec:3.03},
+               {"date": "October 2010", high: 75.1,low:48.4, prec:3.2},
+               {"date": "November 2010", high: 62.4,low:36.3, prec:1.36 },
+               {"date": "December 2010", high: 42.4,low:24.8, prec:5.05 },
+            
+               {"date": "January 2011", high: 46.5, low: 25.4, prec:1.53},
+               {"date": "February 2011", high: 57.3, low: 31.6, prec:1.74},
+               {"date": "March 2011", high: 62.3, low: 38.2, prec:4.37},
+               {"date": "April 2011", high: 73.4, low: 49.4, prec:3.33},
+               {"date": "May 2011", high: 76.7, low: 57.0, prec:4.95},
+               {"date": "June 2011", high: 89.8, low: 67.4, prec:1.69},
+               {"date": "July 2011", high: 93.5, low: 71.4, prec:1.79},
+               {"date": "August 2011", high: 89.7, low: 68.5, prec:3.78},
+               {"date": "September 2011", high: 81.2, low: 62.8, prec:6.4},
+               {"date": "October 2011", high: 70.3, low: 45.6, prec:3.48},
+               {"date": "November 2011", high: 65.1, low: 38.5, prec:3.89},
+               {"date": "December 2011", high: 57.6, low: 34.6, prec:2.45},
+                    
+               {"date": "January 2012", high: 54.4, low: 30.8, prec: 1.74},
+               {"date": "February 2012", high: 56.3, low: 33.3, prec: 2.09 },
+               {"date": "March 2012", high: 70.7, low: 46.4, prec: 4.78},
+               {"date": "April 2012", high: 70.2, low: 46.6, prec: 1.73},
+               {"date": "May 2012", high: 81.2, low: 60.4, prec: 3.96 },
+               {"date": "June 2012", high: 85.1, low: 61.8, prec: 2.21 },
+               {"date": "July 2012", high: 93.1, low: 71.8, prec: 7.88 },
+               {"date": "August 2012", high: 84.8, low: 67.8, prec: 2.2},
+               {"date": "September 2012", high: 80.5, low: 59.4, prec: 10.43},
+               {"date": "October 2012", high: 70.0, low: 48.1, prec: 2.47},
+               {"date": "November 2012", high: 57.8, low: 33.6, prec: 0.53 },
+               {"date": "December 2012", high: 57.4, low: 37.0, prec: 3.24 }, 
+                    
+               {"date": "January 2013", high: 52.3, low: 32.0, prec: 3.59},
+               {"date": "February 2013", high: 50.4, low: 28.8, prec: 4.29},
+               {"date": "March 2013", high: 54.2, low: 31.8, prec: 2.42 },
+               {"date": "April 2013", high: 71.6, low: 47.2, prec: 4.6},
+               {"date": "May 2013", high: 74.9, low: 54.8, prec: 4.79},
+               {"date": "June 2013", high: 78.6, low: 61.3, prec: 9.92},
+               {"date": "July 2013", high: 80.4, low: 64.9, prec: 7.92 },
+               {"date": "August 2013", high: 81, low: 64.1, prec: 3.22 },
+               {"date": "September 2013", high: 80.7, low: 58.6, prec: 2.32 },
+               {"date": "October 2013", high: 66.4, low: 46.9, prec: 2.51 },
+               {"date": "November 2013", high: 59.4, low: 35.4, prec: 2.34 },
+               {"date": "December 2013", high: 55.4, low: 33.1, prec: 5.16}                
+            ];
+
+            var avgs = [
+                { date: "January", high: 49, low: 26, prec: 3.7 },
+                { date: "February", high: 52, low: 28, prec: 3.9 },
+                { date: "March", high: 62, low: 36, prec: 4.2 },
+                { date: "April", high: 71, low: 44, prec: 3.2 },
+                { date: "May", high: 78, low: 53, prec: 4.5 },
+                { date: "June", high: 85, low: 61, prec: 4.4 },
+                { date: "July", high:	89, low: 65, prec: 4.1 },
+                { date: "August", high: 87, low: 64, prec: 4.4 },
+                { date: "September", high: 82, low: 57, prec: 3.2 },
+                { date: "October", high: 72, low: 45, prec: 3.5 },
+                { date: "November", high: 63, low: 37, prec: 3.5 },
+                { date: "December", high: 53, low: 29, prec: 3.5 }
+            ];
+
+            var margin = {top: 20, bottom: 50, left: 70, right: 20},
+                height = 400,
+                width = 1100,
+                band_width = 15;
+
+            var dates = d3.time.format("%B %Y").parse;
+            var avg_dates = d3.time.format("%B %Y").parse;
+
+            var date_range = d3.time.scale()
+                    .domain([dates("December 2009"), dates("December 2013")])
+                    .range([0, width]);
+            var temp_range = d3.scale.linear()
+                    .domain([d3.max(data, function(d) { return d.high; }), 0])
+                    .range([0, height]);
+
+            var xAxis = d3.svg.axis()
+                .scale(date_range)
+                .orient("bottom")
+                .tickFormat(d3.time.format("%b %y"));
+
+            var yAxis = d3.svg.axis()
+                .scale(temp_range)
+                .orient("left");
+
+            var interpolate_high = 95,
+                interpolate_low = 0;
+
+            var tooltip = d3.select("body").append("div")
+                            .attr("class", "tooltip")
+                            .style("opacity", 0);
+
+            var svg = d3.select("body").append("svg")
+                    .attr("height", height + margin.top + margin.bottom)
+                    .attr("width", width + margin.left + margin.right);
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate("+ margin.left + "," + (height + margin.top) + ")")
+                .call(xAxis);
+
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", height + margin.bottom + margin.top)
+                .style("text-anchor", "Middle")
+                .text("Weather Dates");
+
+            svg.append("g")
+                .attr("class", "y axis")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                .call(yAxis);
+
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("x", -(height / 2))
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "middle")
+                .text("Temperature (Fahrenheit)");
+
+            // See http://stackoverflow.com/questions/12826604/how-to-use-svg-gradients-to-display-varying-colors-relative-to-the-size-of-the-c
+            svg.append("linearGradient")
+                .attr("id", "temp-gradient")
+                .attr("gradientUnits", "userSpaceOnUse")
+                .attr("x1", "0%")
+                .attr("y1", temp_range(interpolate_high))
+                .attr("x2", "0%")
+                .attr("y2", temp_range(interpolate_low))
+                .selectAll("stop")
+                .data([
+                    {offset: "5%", color: "red"},
+                    {offset: "15%", color: "orange"},
+                    {offset: "40%", color: "yellow"},
+                    {offset: "45%", color: "lightblue"},
+                    {offset: "80%", color: "darkblue"}
+                ])
+                .enter().append("stop")
+                .attr("offset", function(d) { return d.offset; })
+                .attr("stop-color", function(d) { return d.color; });
+
+            var rec = svg.append("g").selectAll("rect")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("x", function(d) { return date_range(dates(d.date)); })
+                .attr("y", function(d) { return temp_range(d.high); })
+                .attr("transform", "translate("+ (margin.left - band_width / 2) + "," + margin.top + ")")
+                .attr("width", band_width)
+                .attr("height", function(d) { return height - temp_range(d.high - d.low); })
+                .style("fill", "url(#temp-gradient)")
+                .on("mouseover", function(d) {
+                    tooltips(d, false, "no");
+                })
+                .on("mouseout", function() {
+                    tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+                });
+
+            var years = [2010, 2011, 2012, 2013];
+            for(var i=0; i<years.length; i++) {
+                high_lines("red", years[i]);
+                low_lines("blue", years[i]);
+            }
+
+            function high_lines(color, year) {
+                var high_line = d3.svg.line()
+                .x(function(d) { return date_range(avg_dates(d.date + " " + year)); })
+                .y(function(d) { return temp_range(d.high); });
+
+                var highs = svg.append("g");
+
+                highs.append("path")
+                    .attr("d", high_line(avgs)) // create draw attribute by passing values to the line var
+                    .attr("class", "high-lines")
+                    .attr("fill", "none")
+                    .attr("stroke", color)
+                    .attr("stroke-width", 2)
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                circles(color, year, "high");
+
+            }
+
+            function low_lines(color, year) {
+                var low_line = d3.svg.line()
+                    .x(function(d) { return date_range(avg_dates(d.date + " " + year)); })
+                    .y(function(d) { return temp_range(d.low); });
+
+                svg.append("g")
+                    .append("path")
+                    .attr("d", low_line(avgs)) // create draw attribute by passing values to the line var
+                    .attr("class", "low-lines")
+                    .attr("fill", "none")
+                    .attr("stroke", color)
+                    .attr("stroke-width", 2)
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                circles(color, year, "low");
+            }
+
+            function circles(color, year, type) {
+                svg.append("g").selectAll("circle")
+                        .data(avgs)
+                        .enter()
+                        .append("circle")
+                        .attr("transform", "translate("+ margin.left + "," + margin.top + ")")
+                        .attr("cx", function(d) { return date_range(dates(d.date + " " + year)); })
+                        .attr("cy", function(d) {
+                            var temp = (type == "high") ? d.high : d.low;
+                            return temp_range(temp);
+                        })
+                        .attr("r", 5)
+                        .attr("class", type)
+                        .style("fill", "white")
+                        .style("stroke", color)
+                        .on("mouseover", function(d) {
+                            tooltips(d, true, type);
+                        })
+                        .on("mouseout", function() {
+                            tooltip.transition()
+                            .duration(500)
+                            .style("opacity", 0);
+                        });
+            }
+
+            function tooltips(d, avg, high) {
+                var text, temp;
+
+                if(avg) {
+                    d.date = d.date.split(" ")[0];
+                    temp = (high == "high") ? d.high : d.low;
+                    text = "The average " + high + " for " + d.date + "<br /> is " + temp + " degrees Fahrenheit";
+                } else {
+                    text = "The average high for " + d.date + " was " + d.high + " degrees Fahrenheit<br/>" +
+                           " and the average low was " + d.low + " degrees Fahrenheit";
+                }
+
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0.8);
+
+                tooltip.html(text)
+                    .style("left", (d3.event.pageX - 28) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px");
+            }
+         })();
+    </script>
+    <style>
+        .axis path,
+        .axis line {
+            fill: none;
+            padding: 5px;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        rect:hover {
+            opacity: 0.5;
+        }
+
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            width:  auto;
+            height: auto;
+            padding: 5px;
+            fill: black;
+            z-index: 9999;
+            font: 12px Arial,sans-serif;
+            background: whitesmoke;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+<h2>Average Temperatures in Carrboro NC, 2010-2013</h2>
+<script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-47256145-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+</script>
+</body>
+</html>
