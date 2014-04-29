@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+  <!--  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script> -->
+    <script src="d3/d3.js"></script>
+    <script>
+        (window.onload = function() {
+            var margin = {top: 20, right: 40, left: 70, bottom: 80},
+                width = 800 - margin.left - margin.right,
+                height = 225 - margin.top - margin.bottom,
+                map_width = 800, map_height = 550, map_x_transform = 200;
+
+            var tooltip = d3.select("body").append("div")
+                            .attr("class", "tooltip")
+                            .style("opacity", 0);
+
+            var color = ["red", "orange", "green"];
+
+            var format = d3.time.format("%Y-%m-%d").parse;
+
+            var projection = d3.geo.mercator()
+                    .translate([map_width/2, map_height/2])
+                    .center([-98, 35.5])
+                    .rotate([2.5, 2.2])
+                    .scale([5000]);
+            var path = d3.geo.path().projection(projection);
+
+            var map = d3.select("#map").append("svg")
+                    .attr("width", map_width)
+                    .attr("height", map_height)
+                    .attr("transform", "translate(0,20)");
+
+            var g = map.append("g");
+
+            d3.json("oak_shapeSrc1.json", function(topo) {
+               var start = d3.selectAll(".selected").data();
+
+                g.selectAll("path")
+                    .data(topo.features)
+                    .enter()
+                    .append("path")
+                    .attr("d", path);
+
+               render(start);
+            });
+
+            var svg = d3.select("#chart").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom);
+
+            d3.csv("ok_earth.csv", function(data) {
+                // Create scales
+                var xScale = d3.time.scale()
+                        .domain([format("1974-01-01"),format("2014-06-01")])
+                        .range([0, width]);
+
+                var yScale = d3.scale.linear()
+                        .domain([d3.max(data, function(d) { return d.magnitude; }), 0])
+                        .range([0, height]);
+
+                // Create Axis
+                var xAxis = d3.svg.axis()
+                    .scale(xScale)
+                    .orient("bottom")
+                    .tickFormat(d3.time.format("%b %Y"));
+
+                var yAxis = d3.svg.axis()
+                    .scale(yScale)
+                    .orient("left");
+
+                svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate("+ margin.left + "," + (height + margin.top) + ")")
+                    .call(xAxis);
+
+                svg.append("text")
+                    .attr("x", width / 2)
+                    .attr("y", height + margin.bottom)
+                    .style("text-anchor", "end")
+                    .text("Date of Earthquake");
+
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                    .call(yAxis);
+
+                svg.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("x", -height /2)
+                    .attr("y", 6)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "end")
+                    .text("Magnitude");
+
+                var circle = svg.append("g")
+                    .selectAll("circle")
+                    .data(data)
+                    .enter()
+                    .append("circle")
+                    .attr("transform", "translate("+ margin.left + "," + margin.top + ")")
+                    .attr("cx", function(d) { return xScale(format(d.date)); })
+                    .attr("cy", function(d) { return yScale(d.magnitude); })
+                    .attr("r", 3.5)
+                    .style("fill", "steelblue");
+
+                // Add slider
+                var brush = d3.svg.brush()
+                    .x(xScale)
+                    .extent([format("1992-01-01"), format("1997-01-01")])
+                    .on("brushstart", brushstart)
+                    .on("brush", brushmove)
+                    .on("brushend", brushend);
+
+                var arc = d3.svg.arc()
+                    .outerRadius(height / 5)
+                    .startAngle(0)
+                    .endAngle(function(d, i) { return i ? -Math.PI : Math.PI; });
+
+                var brushg = svg.append("g")
+                    .attr("class", "brush")
+                    .call(brush);
+
+                brushg.selectAll(".resize").append("path")
+                    .attr("transform", "translate(" + margin.left + "," +  height / 2 + ")")
+                    .attr("d", arc);
+
+                brushg.selectAll("rect")
+                    .attr("height", height)
+                    .attr("transform", "translate(" + margin.left + ",0)");
+
+                // Pause briefly so initial selection doesn't render under the map
+                setTimeout(function() {
+                    brushstart();
+                    brushmove();
+                }, 1000);
+
+                function brushstart() {
+                  svg.classed("selecting", true);
+                }
+
+                function brushmove() {
+                  var s = brush.extent();
+                  circle.classed("selected", function(d) { return s[0] <= format(d.date) && format(d.date) <= s[1]; });
+                  var selected = d3.selectAll(".selected").data();
+                  render(selected);
+                }
+
+                function brushend() {
+                    svg.classed("selecting", !d3.event.target.empty());
+                }
+            });
+
+
+            function render(start) {
+                enter(start);
+                update(start);
+                remove(start);
+            }
+
+            function enter(data) {
+                g.selectAll("circle")
+                    .data(data)
+                    .enter()
+                    .append("circle")
+                    .attr("class", "map-circle")
+                    .attr("cx", function(d) {
+                        return projection([d.lon, d.lat])[0]; })
+                    .attr("cy", function(d) {
+                        return projection([d.lon, d.lat])[1]; })
+                    .attr("r", function(d) {
+                        return Math.sqrt(d.magnitude) * 5;
+                    })
+                    .style("fill", function(d) {
+                        return quake_color(d);
+                    })
+                    .style("opacity", 0.5)
+                    .on("mouseover", function(d) {
+                        tooltips(d);
+                    })
+                    .on("mouseout", function() {
+                        tooltip.transition()
+                           .duration(500)
+                           .style("opacity", 0);
+                    });
+
+            }
+
+            function update(data) {
+                g.selectAll("circle")
+                    .data(data)
+                    .attr("cx", function(d) {
+                        return projection([d.lon, d.lat])[0]; })
+                    .attr("cy", function(d) {
+                        return projection([d.lon, d.lat])[1]; })
+                    .attr("r", function(d) {
+                        return Math.sqrt(d.magnitude) * 5;
+                    })
+                    .style("fill", function(d) {
+                        return quake_color(d);
+                    })
+                    .on("mouseover", function(d) {
+                       tooltips(d);
+                    });
+            }
+
+            function remove(data) {
+                g.selectAll("circle")
+                    .data(data)
+                    .exit()
+                    .remove();
+            }
+
+            function quake_color(d) {
+                var color;
+
+                if(Math.floor(parseInt(d.magnitude)) >= 4) {
+                    color = "red";
+                } else if(Math.floor(parseInt(d.magnitude)) >= 3) {
+                    color = "orange";
+                } else {
+                    color = "green";
+                }
+
+                return color;
+            }
+
+            function tooltips(d) {
+                var date_format = format(d.date).toDateString();
+
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0.8);
+
+                tooltip.html("Magnitude " + d.magnitude +" quake<br/>on " + date_format + "<br/>" + d.location)
+                    .style("left", (d3.event.pageX - 28) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px");
+            }
+        })();
+    </script>
+    <style>
+         body {
+
+            font-family: 'Roboto', sans-serif;
+            font-size: 14px;
+        }
+
+        #grid {
+            background-color: white;
+
+            margin: -1.5% 10%;
+            padding: 10px 0;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            padding: 5px;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        path {
+            stroke: white;
+            stroke-width: 1;
+            fill: lightgray;
+        }
+
+        circle {
+            -webkit-transition: fill-opacity 250ms linear;
+            fill-opacity: 1;
+        }
+
+        .selecting circle {
+          fill-opacity: .4;
+        }
+
+        .selecting circle.selected {
+            stroke: #f00;
+            fill-opacity: 1;
+        }
+
+        .resize path {
+          fill: #666;
+          fill-opacity: .8;
+          stroke: lightgray;
+          stroke-width: 2px;
+        }
+
+        .brush .extent {
+          fill-opacity: .1;
+          shape-rendering: crispEdges;
+        }
+
+        #map {
+            margin-left: 15%;
+            min-height: 400px;
+        }
+
+        #chart {
+            margin-left: 15%;
+            min-height: 250px;
+        }
+
+        .map-circle:hover {
+            cursor: pointer;
+        }
+
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            width:  auto;
+            height: auto;
+            padding: 5px;
+            fill: black;
+            z-index: 9999;
+            font: 12px Arial,sans-serif;
+            background: whitesmoke;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        .intro {
+            margin: 0 10% 10px 10%;
+            text-align: justify;
+        }
+
+        .notes {
+            color: gray;
+            margin-left: 16%;
+        }
+
+        h2 {
+            text-align: center;
+            padding-top: 10px;
+        }
+
+        @media all and (max-width: 1250px) {
+          body {
+            background: white;
+          }
+        }
+    </style>
+</head>
+    <body>
+        <div id="map"></div>
+        <div id="chart"></div>
+    </body>
+</html>
